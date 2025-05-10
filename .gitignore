@@ -43,7 +43,7 @@ policyengine_uk/tools/datasets.yml
 policyengine_uk/calibration/*.csv
 policyengine_uk/calibration/*.yaml
 policyengine_uk/calibration/*.h5
-
+policyengine_venv/
 # Microdata
 
 **/*.h5
