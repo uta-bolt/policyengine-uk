@@ -52,7 +52,8 @@ policyengine_venv/
 **/*.log
 **/ukmod.json
 
-*.ipynb
+.ipynb
 !docs/**/*.ipynb
 baseline_income.xlsx
 ~$baseline_income.xlsx
+*.env
