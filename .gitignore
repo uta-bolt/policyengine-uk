@@ -54,3 +54,5 @@ policyengine_venv/
 
 *.ipynb
 !docs/**/*.ipynb
+baseline_income.xlsx
+~$baseline_income.xlsx
