@@ -1,6 +1,0 @@
-description: Additional child element for children under 5
-values:
-  2025-04-01: 100.00
-metadata:
-  unit: currency-GBP
-  label: UC child element bonus for under 5s

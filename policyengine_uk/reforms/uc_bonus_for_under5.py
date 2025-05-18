@@ -1,34 +1,57 @@
 from policyengine_uk.model_api import *
-from policyengine_core.reforms.reform import Reform
+
+# # Define bonus variable
+# class uc_child_element_bonus_under_5(Variable):
+#     value_type = float
+#     entity = BenUnit
+#     label = "UC bonus for children under 5"
+#     definition_period = MONTH
+#     unit = GBP
+
+#     def formula(benunit, period):
+#         is_under_5 = benunit.any(benunit.members("age", period) < 5)
+#         return is_under_5 * 100.0
 class uc_child_element_bonus_under_5(Variable):
     value_type = float
     entity = BenUnit
-    label = "UC child element bonus for children under 5"
-    definition_period = MONTH
+    label = "UC child element bonus for under 5s"
+    definition_period = YEAR
     unit = GBP
 
     def formula(benunit, period):
-        is_under_5 = benunit.sum(benunit.members("age", period) < 5)
-        print("👶 Number of children under 5:", is_under_5)
-        return is_under_5 * 100
-
-
-class modified_universal_credit(Variable):
+        has_under5 = benunit.any(benunit.members("age", period) < 5)
+        return 100.0 * has_under5  # 👈 Hardcoded instead of parameter
+# Modify universal credit to include the bonus
+class universal_credit(Variable):
     value_type = float
     entity = BenUnit
-    label = "Universal Credit with under-5 bonus"
-    definition_period = MONTH
+    label = "Universal Credit (with child under 5 bonus)"
+    definition_period = YEAR
     unit = GBP
 
     def formula(benunit, period):
-        base = benunit("universal_credit", period, reform="baseline")
+        # Create a baseline branch to access the original universal_credit value
+        baseline = benunit.simulation.get_branch("baseline", clone_system=True)
+        base = baseline.calculate("universal_credit", period, map_to="benunit")
         bonus = benunit("uc_child_element_bonus_under_5", period)
-        print("💸 Base UC:", base)
-        print("🎁 Bonus UC:", bonus)
         return base + bonus
+    
+class num_households_with_under5(Variable):
+    value_type = float
+    entity = BenUnit
+    label = "Number of households with a child under 5"
+    definition_period = YEAR
+    unit = "count"
 
-
-class AddUCChildUnder5Bonus(Reform):
+    def formula(benunit, period):
+        has_under5 = benunit.any(benunit.members("age", period) < 5)
+        return has_under5.astype(float)
+    
+# Export this as `reform`
+class reform(Reform):
     def apply(self):
-        #self.add_variable(uc_child_element_bonus_under_5)
-        self.update_variable(modified_universal_credit, name="universal_credit")
+        if "uc_child_element_bonus_under_5" not in self.variables:
+            self.add_variable(uc_child_element_bonus_under_5)
+        if "num_households_with_under5" not in self.variables:
+            self.add_variable(num_households_with_under5)    
+        self.update_variable(universal_credit)
