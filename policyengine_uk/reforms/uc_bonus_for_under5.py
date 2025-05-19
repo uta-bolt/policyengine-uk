@@ -1,26 +1,22 @@
 from policyengine_uk.model_api import *
 
-# # Define bonus variable
-# class uc_child_element_bonus_under_5(Variable):
-#     value_type = float
-#     entity = BenUnit
-#     label = "UC bonus for children under 5"
-#     definition_period = MONTH
-#     unit = GBP
 
-#     def formula(benunit, period):
-#         is_under_5 = benunit.any(benunit.members("age", period) < 5)
-#         return is_under_5 * 100.0
 class uc_child_element_bonus_under_5(Variable):
     value_type = float
     entity = BenUnit
     label = "UC child element bonus for under 5s"
-    definition_period = YEAR
+    definition_period = MONTH
     unit = GBP
 
     def formula(benunit, period):
         has_under5 = benunit.any(benunit.members("age", period) < 5)
-        return 100.0 * has_under5  # 👈 Hardcoded instead of parameter
+        baseline = benunit.simulation.get_branch("baseline", clone_system=True)
+        received_uc = baseline.calculate("universal_credit", period, map_to="benunit") > 0
+        count = 0.0
+        for age in range(5):
+            has_age = benunit.any(benunit.members("age", period) == age)
+            count += has_age.astype(float)
+        return 80.0 *count*received_uc  #   Hardcoded instead of parameter  has_under5
 # Modify universal credit to include the bonus
 class universal_credit(Variable):
     value_type = float
