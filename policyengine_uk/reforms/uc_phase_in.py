@@ -293,13 +293,13 @@ class uc_phase_in_addition(Variable):
         flat_end = 4000.0  # End of phase 2 (flat section)
 
         # Phase 1: 0 to £3000 - add 0.2 * employment_income
-        phase1_addition = 0.2 * employment_income
+        phase1_addition = 0.1 * employment_income
 
         # Phase 2: £3000 to £4000 - flat (keep the same addition as at £3000)
-        phase2_addition = 0.2 * phase_in_threshold  # = 0.2 * 3000 = £600
+        phase2_addition = 0.1 * phase_in_threshold  # = 0.2 * 3000 = £600
 
         # Phase 3: £4000+ - no addition
-        phase3_addition = 0.2 * phase_in_threshold  # 0.0
+        phase3_addition = 0.1 * phase_in_threshold  # 0.0
 
         # Apply phase logic
         addition = where(
